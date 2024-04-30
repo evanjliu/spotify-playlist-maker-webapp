@@ -2,20 +2,20 @@ const zmqUtils = require('../ZeroMQ Modules/zmq-pipes');
 
 exports.createPlaylist = async (req, res) => {
     try {
-        const { selectedGenres, numSongs, explicit } = req.body;
+        const { selectedGenres, numSongs, explicit } = req.query;
 
         // Sends message to playlist-maker microservice
-        const result = await zmqUtils.getPlaylist({
+        /*const result = await zmqUtils.getPlaylist({
             selectedGenres,
             numSongs,
             explicit
-        });
+        });*/
 
         // Process result here
         
         
         // Sends status code 200 if successful
-        res.status(200).json({message: 'Playlist created successfully', data: result});
+        res.status(200).json({message: 'Playlist created successfully', data: req.query});
 
     } catch (error) {
         console.error(error);

@@ -79,30 +79,31 @@ function CreatePlaylistPage () {
         setGenreOptions(allGenres);
     };
     
-    // Handler for form submission (optional)
-    const handleSubmit = (e) => {
+    // Handler for when the SUBMIT button is clicked
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Data for sending
-        const data = {
-            selectedGenres: selectedGenres,
-            numSongs: numSongs,
-            explicit: explicit
-        };
-
-        // Send POST request to the backend to retrieve playlist from microservice
-        axios.post('/get-playlist', data)
+        
+        // GET request to the backend to generate a playlist
+        axios.get('/get-playlist', {
+            params: {
+                selectedGenres: selectedGenres.join(','),
+                numSongs: numSongs,
+                explicit: explicit
+            }
+        })
             .then(response => {
                 console.log(response.data);
-                redirect('/playlist', { state: { playlist }})
+                redirect('/playlist')
                 
             })
             .catch(error => {
                 console.error(error)
                 alert("Something went wrong.")
             });
+            
     };
 
+    // Handles navigating for more information
     const handleNavigate = (e) => {
         e.preventDefault();
         redirect('/')
