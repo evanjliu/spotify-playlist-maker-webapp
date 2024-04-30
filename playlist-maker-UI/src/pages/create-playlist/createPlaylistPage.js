@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect} from 'react';
+import axios from 'axios';
 
 // Page
 function CreatePlaylistPage () {
@@ -23,7 +24,7 @@ function CreatePlaylistPage () {
     // Load local playlist details if available
     const initialSelectedGenres = JSON.parse(localStorage.getItem('genres')) || [];
     const initialNumSongs = parseInt(localStorage.getItem('num-songs')) || 20;
-    const initialExplicit = localStorage.getItem('explicit') || false;
+    const initialExplicit = JSON.parse(localStorage.getItem('explicit')) || "no";
     const initialGenreOptions = JSON.parse(localStorage.getItem('genre-options')) || allGenres;
 
     // Loads the playlist from local storage. If none, sets to empty array.
@@ -39,7 +40,7 @@ function CreatePlaylistPage () {
     useEffect(() => {
         localStorage.setItem('genres', JSON.stringify(selectedGenres));
         localStorage.setItem('num-songs', numSongs);
-        localStorage.setItem('explicit', explicit);
+        localStorage.setItem('explicit', JSON.stringify(explicit));
         localStorage.setItem('genre-options', JSON.stringify(genreOptions));
         }, 
         [selectedGenres, numSongs, explicit, genreOptions]
@@ -67,14 +68,14 @@ function CreatePlaylistPage () {
     
     // Handler for updating explicit variable
     const handleExplicitChange = (e) => {
-        setExplicit(e.target.value === 'yes');
+        setExplicit(e.target.value);
     };
 
     // Handler for reset button
     const handleReset = () => {
         setSelectedGenres([]);
         setNumSongs(20);
-        setExplicit(false);
+        setExplicit("no");
         setGenreOptions(allGenres);
     };
     
@@ -82,14 +83,36 @@ function CreatePlaylistPage () {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-    // Add any logic here to handle form submission
-    
+        // Data for sending
+        const data = {
+            selectedGenres: selectedGenres,
+            numSongs: numSongs,
+            explicit: explicit
+        };
+
+        // Send POST request to the backend to retrieve playlist from microservice
+        axios.post('/get-playlist', data)
+            .then(response => {
+                console.log(response.data);
+                redirect('/playlist', { state: { playlist }})
+                
+            })
+            .catch(error => {
+                console.error(error)
+                alert("Something went wrong.")
+            });
     };
 
+    const handleNavigate = (e) => {
+        e.preventDefault();
+        redirect('/')
+    };
 
     return (
         <div>
             <h1>Create Playlist</h1>
+            <p><b>Instructions: </b>In order to create a personalized playlist, select one or more of the following provided genres. You can also specify how many songs you would like in the playlist, and whether to include explicit songs.</p>
+            <p><span className="link" onClick={handleNavigate}>Click here</span> to learn more about how personalization works!</p>
             <form onSubmit={handleSubmit}>
                 <button type="button" onClick={handleReset}>Reset</button>
                 <div>
@@ -130,13 +153,12 @@ function CreatePlaylistPage () {
 
                 <div>
                     <label>Allow Explicit Songs</label>
-                    
                     <input
                     type="radio"
                     id="explicitYes"
                     name="explicit"
                     value="yes"
-                    checked={explicit}
+                    defaultChecked={explicit === 'yes'}
                     onChange={handleExplicitChange}
                     />
                     <label htmlFor="explicitYes">Yes</label>
@@ -146,12 +168,13 @@ function CreatePlaylistPage () {
                     id="explicitNo"
                     name="explicit"
                     value="no"
-                    checked={!explicit}
+                    defaultChecked={explicit === 'no'}
                     onChange={handleExplicitChange}
                     />
                     <label htmlFor="explicitNo">No</label>
                 </div>
 
+                <p><b>WARNING: </b>Previously generated playlists will be lost to the void!</p>
                 <button type="submit">Create Playlist</button>
             </form>
         </div>

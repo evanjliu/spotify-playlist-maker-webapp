@@ -29,8 +29,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/create" element={<CreatePlaylistPage />} />
-            <Route path="/export" element={<ExportPlaylistPage />} />
             <Route path="/playlist" element={<MyPlaylistPage />} />
+            <Route path="/export" element={<ExportPlaylistPage />} />
             <Route path="/new" element={<WhatsNewPage />} /> 
           </Routes>
         </section>

@@ -137,3 +137,7 @@ footer {
   background-color: #681f0dbd;
   color: var(--text);
 }
+
+.link:hover, button:hover {
+  cursor:pointer;
+}
