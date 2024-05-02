@@ -1,17 +1,18 @@
-// ZeroMQ
+// ZeroMQ and other modules
 const zmq = require('zeromq');
+const fs = require('fs');
 
 // Import get token functions
 const {getAccessToken} = require('./src/getToken');
 const {refreshAccessToken} = require('./src/refreshAccessToken');
+const {readAccessToken, saveAccessToken} = require('./src/accessTokens');
 
 // Define Spotify credentials
 const CLIENT_ID = '4941ac63e50843f8871d981fc9fc72e8';
 const CLIENT_SECRET = '47d120af57df4f8099ea8c0fe2e7b88d';
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
-let cur_tok = 'BQBeYCm_hWLCdk1CVadCJp2yzOuYg44UKRu1bKlezQh9UUzhCVKVfyV41GPUS0UXuKYcBnt-hyDSR1vG2XfSlZ_COiC2aP5n3MsJCrBLLfbg2OLPddc';
 
-// Spotify web api
+// Spotify Web API
 const SpotifyWebAPI = require('spotify-web-api-node');
 const spotify = new SpotifyWebAPI ({
     clientId: CLIENT_ID,
@@ -23,7 +24,7 @@ const spotify = new SpotifyWebAPI ({
 // FUNCTION
 // ---------------------------------------
 async function createPlaylist() {
-    console.log('Microservice is up and Running. \nNow waiting for messages...\n');
+    console.log('Microservice is up and Running. \n\nNow waiting for messages...\n');
 
     // ZeroMQ sockets
     /*
@@ -31,16 +32,44 @@ async function createPlaylist() {
     await sock.bing('tcp://*:1111');
     */
 
-    // Spotify Token
-    if (!cur_tok) {
-        console.log("Retreiving Access Token...\n")
-        let myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+    // Spotify Token Get
+    console.log("Retreiving Access Token...\n")
+    let myToken = readAccessToken();
+    
+    console.log('Current Token: ', myToken, '\n')
+    
+    if (myToken.length > 0) {
+        console.log('Access Token Found.\n');
         spotify.setAccessToken(myToken);
     } else {
-        myToken = cur_tok;
+        myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
         spotify.setAccessToken(myToken);
+        saveAccessToken(myToken)
     }
-    
+
+    // Test Token
+    // If token is expired, refresh token. 
+    // If token is incomplete or wrong, gets a new token.
+    try {
+        const test = await spotify.searchTracks('Heat Waves', {limit: 3})
+        console.log('Testing Token...\n\nTest Data: ', test.body, '\n');
+        
+    } catch (error) {
+        try {
+            if (error.statusCode === 401) {
+                console.log("Access token expired or incorrect, attempting to refresh token.\n");
+                newToken = await refreshAccessToken(myToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT)
+                myToken = newToken.body['access_token']
+        }
+        } catch (error) {
+            console.error(error.body)
+            console.log('Token was incorrect. Retreiving new token.')
+            myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+            spotify.setAccessToken(myToken);
+            saveAccessToken(myToken);
+        }
+    }
+
     // Token Refresh every hour
     setInterval( async () => {
         console.log("Refreshing Access Token...\n");
@@ -48,24 +77,28 @@ async function createPlaylist() {
 
         // Set access token
         spotify.setAccessToken(refreshedToken);
-        console.log("Token Refreshed!")
+        console.log("Token Refreshed!\n")
     }, 3600000); // Refresh token every hour
 
-    console.log('My Token: ', myToken, '\n')
-
-    // Spotify Routes and API
-    spotify.searchTracks('Ruler in my Heart', { limit:10 })
+    // Spotify Routes and API Calls
+    spotify.getRecommendations({
+        seed_genres: ['classical', 'pop'],
+        limit: 3
+    })
         .then(function(data) {
-            console.log('Searching by "Ruler in my Heart');
+            const recs = data.body;
+            console.log('Recommended Tracks Object: ', recs);
 
-            // Testing
-            const items = data.body.tracks.items;
+            const items = data.body.tracks;
+            console.log(items);
+
             for(let i = 0; i < items.length; i++) {
                 console.log(items[i].name)
             };
-        }, function(err) {
-            console.error(err);
-        });
+
+        }), function(err) {
+            console.log('Something went wrong.', err);
+        }
 };
 
 createPlaylist();

@@ -1,5 +1,6 @@
 // Import dependencies
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { useState } from 'react';
 
 // Import navigation and CSS
 import Navigation from './components/Navigation.js';
@@ -14,6 +15,8 @@ import WhatsNewPage from './pages/whats-new/whatsNewPage';
 
 // App
 function App() {
+
+  const [playlist, setPlaylist] = useState([])
   return (
     <BrowserRouter>
     <div className="App">
@@ -28,8 +31,8 @@ function App() {
         <section>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/create" element={<CreatePlaylistPage />} />
-            <Route path="/playlist" element={<MyPlaylistPage />} />
+            <Route path="/create" element={<CreatePlaylistPage setPlaylist={setPlaylist} />} />
+            <Route path="/playlist" element={<MyPlaylistPage myPlaylist={playlist} />} />
             <Route path="/export" element={<ExportPlaylistPage />} />
             <Route path="/new" element={<WhatsNewPage />} /> 
           </Routes>

@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 async function getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT) {
-
     try {
         const response = await axios.post(TOKEN_ENDPOINT,{
             grant_type: 'client_credentials',
@@ -15,7 +14,7 @@ async function getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT) {
 
         if (response.status === 200) {
             const accessToken = response.data.access_token;
-            console.log('Access Token:', accessToken);
+            console.log('Access Token:', accessToken, '\n');
             return accessToken;
         } else {
             console.error('Failed to obtain access token:', response.statusText);
