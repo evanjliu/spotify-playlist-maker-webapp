@@ -27,21 +27,21 @@ async function createPlaylist() {
     console.log('Microservice is up and Running. \n\nNow waiting for messages...\n');
 
     // ZeroMQ sockets
-    /*
     const sock = new zmq.Reply();
-    await sock.bing('tcp://*:1111');
-    */
+    await sock.bind('tcp://*:5555');
+    
 
     // Spotify Token Get
     console.log("Retreiving Access Token...\n")
     let myToken = readAccessToken();
     
-    console.log('Current Token: ', myToken, '\n')
     
     if (myToken.length > 0) {
-        console.log('Access Token Found.\n');
+        console.log('Current Token: ', myToken, '\n')
         spotify.setAccessToken(myToken);
     } else {
+        // If no token found, get another token, set, and save
+        console.log('No token was found. Fetching new token...\n')
         myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
         spotify.setAccessToken(myToken);
         saveAccessToken(myToken)
@@ -57,18 +57,36 @@ async function createPlaylist() {
     } catch (error) {
         try {
             if (error.statusCode === 401) {
+                // Attempt refresh token because current one is expired or doesn't work
                 console.log("Access token expired or incorrect, attempting to refresh token.\n");
                 newToken = await refreshAccessToken(myToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT)
                 myToken = newToken.body['access_token']
+
+                // Set refreshed token as current token and save
+                spotify.setAccessToken(myToken);
+                saveAccessToken(myToken)
+
+                // Test again
+                const retest1 = await spotify.searchTracks('I want it that way', {limit: 3})
+                console.log('Testing Token...\n\nTest Data: ', retest1.body, '\n');
+
         }
         } catch (error) {
             console.error(error.body)
             console.log('Token was incorrect. Retreiving new token.')
+
+            // Get new token because current one is broken and then set and save token
             myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
             spotify.setAccessToken(myToken);
             saveAccessToken(myToken);
+
+            // Test again
+            const retest2 = await spotify.searchTracks('Ruler in my heart', {limit: 3})
+            console.log('Testing Token...\n\nTest Data: ', retest2.body, '\n');
         }
     }
+
+    console.log('Tests successful! Starting up playlist microservice and listening for messages...\n')
 
     // Token Refresh every hour
     setInterval( async () => {
@@ -77,28 +95,52 @@ async function createPlaylist() {
 
         // Set access token
         spotify.setAccessToken(refreshedToken);
+        saveAccessToken(refreshAccessToken);
+        myToken = refreshAccessToken;
+
         console.log("Token Refreshed!\n")
     }, 3600000); // Refresh token every hour
 
-    // Spotify Routes and API Calls
-    spotify.getRecommendations({
-        seed_genres: ['classical', 'pop'],
-        limit: 3
-    })
-        .then(function(data) {
-            const recs = data.body;
-            console.log('Recommended Tracks Object: ', recs);
+    //-------------------------------------------------
+    // Recieve messages and process
+    //-------------------------------------------------
+    
+    // Define variables
+    let numSongs = 5;
+    let explicit = 'no';
+    let genres = ['anime']
 
-            const items = data.body.tracks;
-            console.log(items);
+    for await (const [msg] of sock) {
 
-            for(let i = 0; i < items.length; i++) {
-                console.log(items[i].name)
-            };
+        let request = JSON.parse(msg);
+        console.log('Recieved Message' + ': ' + msg + '\n');
 
-        }), function(err) {
-            console.log('Something went wrong.', err);
-        }
+        // Set User parameters to values to be used to make API call
+        numSongs = (request.numSongs);
+        explicit = (request.explicit);
+        genres = [request.selectedGenres];
+        
+
+        // Spotify Routes and API Calls
+        spotify.getRecommendations({
+            seed_genres: genres,
+            limit: numSongs
+        })
+            .then(function(data) {
+
+                const items = data.body.tracks;
+
+                for(let i = 0; i < items.length; i++) {
+                    console.log(items[i].name)
+                };
+
+                // Send back the playlist with tracks only
+                sock.send(JSON.stringify(items));
+
+            }), function(err) {
+                console.log('Something went wrong.', err);
+            }
+    }
 };
 
 createPlaylist();

@@ -56,7 +56,9 @@
   --gold: gold;
   --text: white;
   --text-dark: black;
-  --background: #0d110bf5;
+  --background: #333333;
+  --main-background: #7e7d7d5b;
+  --nav-background: black;
   --popup-background: rgba(247, 233, 197, 0.897);
 }
 
@@ -74,19 +76,19 @@ body {
   min-height: 100vh;
   margin: 0 auto;
   color:var(--text);
+  background:var(--background);
+  backdrop-filter: blur(6px);
 }
 
 main {
   min-height: 100vh;
-  width: 100vw;
-  background:black;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px);
-  margin: auto;
+  width: 70vw;
+  margin: 10px auto;
 }
+
 /* Header and footer */
 .App-header, footer {
-  background-color: var(--background);
+  background-color: var(--nav-background);
   min-height: 08vh;
   display: flex;
   align-items: center;
@@ -96,6 +98,34 @@ main {
 
 footer {
   justify-content: center;
+}
+
+/* Text blocks and links */
+a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+p {
+  margin:30px auto;
+  width: 50%;  
+  text-align: left;
+}
+
+h1 {
+  margin: 0 20px 20px 20px;
+  font-size: 32px;
+}
+
+/* Classes for manipulating text */
+.center-text {
+  text-align: center;
+}
+.bold-text {
+  font-weight: bold;
+}
+.link-text {
+  color:lightblue
 }
 
 /* NAVIGATION */
@@ -123,6 +153,7 @@ footer {
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+  transition: background-color 0.2s ease;
 }
 
 /* Change the color of links on hover */
@@ -141,3 +172,144 @@ footer {
 .link:hover, button:hover {
   cursor:pointer;
 }
+
+/* -------------------------------------
+Form Elements 
+--------------------------------------*/
+.playlist-form {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #333333;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+button {
+  background-color: #1db954; 
+  color: rgb(255, 255, 255);
+  border: 1px solid #1db954;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.5s ease;
+}
+
+button:hover {
+  background-color: #555; 
+  border:#1db954 solid 1px;
+}
+
+/* Style for labels */
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-size: 1.1em;
+}
+
+/* Style for input fields */
+input[type="number"], select, input[type="radio"] {
+  width: 50%;
+  padding: 10px;
+  margin-bottom: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: #555555;
+  color: #ffffff;
+  font-size: 105%;
+  text-align: center;
+}
+
+/* Style for radio button labels */
+input[type="radio"] + label {
+  margin: 10px;
+  font-weight: bold;
+}
+
+.explicit-radio {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.explicit-radio input {
+  margin-bottom: 0;
+}
+
+/* Style for the "X" button */
+.remove-button {
+  padding: 5px;
+  margin-left: 10px;
+  border: #ff4444 1px solid;
+  border-radius: 30%;
+  background-color: #ff4444;
+}
+.reset-button {
+  border: #8f2f2f 1px solid;
+  background-color: #ac4f4fe3;
+  font-weight: bolder;
+}
+
+/* Style for the selected genres list */
+.selected-genres {
+  border: 2px white inset;
+  margin: 15px auto 30px auto;
+  width: 80%;
+  border-radius: 10px;
+}
+
+.selected-genres ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.selected-genres li {
+  margin-bottom: 5px;
+  color: #ffffff;
+
+}
+
+/* Playlist  */
+.playlist-table {
+  margin: 40px auto;
+  width: 80%;
+  border-collapse: collapse;
+  border: white 2px inset;
+  border-radius: 10%;
+}
+
+.playlist-table tr {
+  background-color: #303030;
+}
+
+.playlist-table tr:nth-child(even) {
+  background-color: #474646;
+}
+
+.playlist-table td {
+  padding: 8px;
+}
+
+.playlist-table th {
+  padding: 8px;
+  background-color: #333;
+}
+
+.playlist-table button {
+  background-color: #dc3545; /* Red color */
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.playlist-table button:hover {
+  background-color: #949494;
+}
+
+/* Home page */

@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from 'axios';
-import myPlaylistComponent from "../../components/myPlaylist";
+import MyPlaylistComponent from "../../components/myPlaylist";
 
 // Page
 function MyPlaylistPage ({myPlaylist}) {
@@ -74,30 +73,38 @@ function MyPlaylistPage ({myPlaylist}) {
         redirect('/create');
     };
 
+
     // Webpage
     return (
         <div>
             <h1>My Playlist</h1>
 
             <div>
-                {myPlaylist && myPlaylist.length > 0 ? (
-                    <div> </div>
+                {myPlaylist && (myPlaylist).length > 0 ? (
+                    <div><MyPlaylistComponent playlist={myPlaylist} /></div>
                 ) : (
-                    <p>No songs in the playlist.</p>
+                    <div>
+                        <p className="center-text bold-text">You haven't created a playlist yet! Click on the button below to create a playlist!</p>
+                        <button onClick={handleNavigateCreate}>Create Playlist</button>
+                        
+                        <MyPlaylistComponent playlist={myPlaylist} />
+                    </div>
                 )}
             </div>
 
             <div>
                 {myPlaylist && myPlaylist.length > 0 ? (
                     <div>
-                        <p>There is a playlist</p>
-                        <myPlaylistComponent />
-                    </div>
-                ) : (
-                    <div>
+                        { MyPlaylistComponent }
                         <button onClick={handleNavigateExport}>Export</button>
                         <button onClick={handleNavigateCreate}>Create Again</button>
                         <button onClick={handleAgain}>Create the Same Thing</button>
+                    </div>
+                ) : (
+                    <div>
+{/*                         <button onClick={handleNavigateExport}>Export</button>
+                        <button onClick={handleNavigateCreate}>Create Again</button>
+                        <button onClick={handleAgain}>Create the Same Thing</button> */}
                     </div>
                 )}
             </div>

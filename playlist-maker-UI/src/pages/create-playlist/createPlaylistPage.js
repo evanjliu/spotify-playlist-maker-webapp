@@ -85,34 +85,47 @@ function CreatePlaylistPage ({setPlaylist}) {
 
     // Handler for reset button
     const handleReset = () => {
-        setSelectedGenres([]);
-        setNumSongs(20);
-        setExplicit("no");
-        setGenreOptions(allGenres);
+        let resetConfirm = window.confirm("Are you sure you want to reset?")
+        if (resetConfirm) {
+            setSelectedGenres([]);
+            setNumSongs(20);
+            setExplicit("no");
+            setGenreOptions(allGenres);
+        }
     };
     
     // Handler for when the SUBMIT button is clicked
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (selectedGenres.length < 1){
+            alert("Please select at least 1 genre.");
+            return;
+        }
+        let confirm = window.confirm("Are you sure you want to proceed with these selected parameters?\n\n Any generated playlists will be lost to the void.");
         
-        // GET request to the backend to generate a playlist
-        axios.get('/get-playlist', {
-            params: {
-                selectedGenres: selectedGenres.join(','),
-                numSongs: numSongs,
-                explicit: explicit
-            }
-        })
-            .then(response => {
-                console.log(response.data);
-                setPlaylist(response.data);
-                redirect('/playlist');
-                
+        if (confirm) {
+            // GET request to the backend to generate a playlist
+            axios.get('/get-playlist', {
+                params: {
+                    numSongs: numSongs,
+                    explicit: explicit,
+                    selectedGenres: selectedGenres.join(','),
+                }
             })
-            .catch(error => {
-                console.error(error);
-                alert("Something went wrong.");
-            });
+                .then(response => {
+                    console.log(response.data.data);
+                    setPlaylist(response.data.data);
+
+                    setTimeout(() => {
+                        redirect('/playlist');
+                    }, 500) 
+                    
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Something went wrong.");
+                });
+        }
             
     };
 
@@ -127,69 +140,76 @@ function CreatePlaylistPage ({setPlaylist}) {
             <h1>Create Playlist</h1>
             <p><b>Instructions: </b>In order to create a personalized playlist, select one or more of the following provided genres. You can also specify how many songs you would like in the playlist, and whether to include explicit songs.</p>
             <p><span className="link" onClick={handleNavigate}>Click here</span> to learn more about how personalization works!</p>
-            <form onSubmit={handleSubmit}>
-                <button type="button" onClick={handleReset}>Reset</button>
-                <div>
-                <label htmlFor="numberOfSongs">Number of Songs:</label>
-                <input
-                    type="number"
-                    id="numberOfSongs"
-                    min={1}
-                    max={100}                    
-                    value={numSongs}
-                    onChange={handleNumSongsChange}
-                    required
-                />
-                </div>
-
-                {/* Ask for Genres */}
-                <div>
-                    <label>Select up to 5 Genres: </label>
-                    <select value={currentGenre} onChange={handleGenreSelection}>
-                        <option value="" hidden>-- Select Genre --</option>
-                        {genreOptions.map(genre => (
-                            <option key={genre} value={genre}>{genre}</option>
-                        ))}
-                    </select>
-
-                    <div>
-                        <label>Selected Genres. Press the "X" to remove a genre from the list.</label>
-                        <ul>
-                            {selectedGenres.map(genre => (
-                                <li key={genre}>
-                                    {genre}
-                                    <button type="button" onClick={() => handleRemoveGenre(genre)}>Remove</button>
-                                </li>
-                            ))}
-                        </ul>
+            
+            <form onSubmit={handleSubmit} className="playlist-form">
+                <fieldset>
+                    <div className="numSongsInput">
+                        <label htmlFor="numberOfSongs">Number of Songs (Max 50):</label>
+                        <input
+                            type="number"
+                            id="numberOfSongs"
+                            min={1}
+                            max={100}                    
+                            value={numSongs}
+                            onChange={handleNumSongsChange}
+                            required
+                        />
                     </div>
-                </div>
 
-                <div>
-                    <label>Allow Explicit Songs</label>
-                    <input
-                    type="radio"
-                    id="explicitYes"
-                    name="explicit"
-                    value="yes"
-                    defaultChecked={explicit === 'yes'}
-                    onChange={handleExplicitChange}
-                    />
-                    <label htmlFor="explicitYes">Yes</label>
-                
-                    <input
-                    type="radio"
-                    id="explicitNo"
-                    name="explicit"
-                    value="no"
-                    defaultChecked={explicit === 'no'}
-                    onChange={handleExplicitChange}
-                    />
-                    <label htmlFor="explicitNo">No</label>
-                </div>
+                    {/* Ask for Genres */}
+                    <div className="genre-select">
+                        <div className="genre-dropdown">
+                            <label>Select up to 5 Genres: </label>
+                            <select value={currentGenre} onChange={handleGenreSelection}>
+                                <option value="" hidden>-- Select Genre --</option>
+                                {genreOptions.map(genre => (
+                                    <option key={genre} value={genre}>{genre}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                <p><b>WARNING: </b>Previously generated playlists will be lost to the void!</p>
-                <button type="submit">Create Playlist</button>
+                        <div className="selected-genres">
+                            <label>Selected Genres. Press the "X" to remove a genre from the list.</label>
+                            <ul>
+                                {selectedGenres.map(genre => (
+                                    <li key={genre}>
+                                        {genre}
+                                        <button type="button" onClick={() => handleRemoveGenre(genre)} className="remove-button">X</button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    <label>Allow Explicit Songs?</label>
+                    <div className="explicit-radio">
+                        <div>
+                            
+                            <input
+                            type="radio"
+                            id="explicitYes"
+                            name="explicit"
+                            value="yes"
+                            defaultChecked={explicit === 'yes'}
+                            onChange={handleExplicitChange}
+                            />
+                            <label htmlFor="explicitYes">Yes</label>
+                        </div>
+                        <div>
+                            <input
+                            type="radio"
+                            id="explicitNo"
+                            name="explicit"
+                            value="no"
+                            defaultChecked={explicit === 'no'}
+                            onChange={handleExplicitChange}
+                            />
+                            <label htmlFor="explicitNo">No</label>
+                        </div>
+                    </div>
+    
+                    <button type="button" onClick={handleReset} className="reset-button">Reset</button>
+                    <button type="submit">Create Playlist</button>
+                </fieldset>
             </form>
         </div>
     )
