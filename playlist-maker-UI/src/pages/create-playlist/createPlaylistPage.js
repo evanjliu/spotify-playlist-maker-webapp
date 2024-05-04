@@ -46,6 +46,7 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     const [explicit, setExplicit] = useState(initialExplicit);
     const [genreOptions, setGenreOptions] = useState(initialGenreOptions);
     const [currentGenre, setCurrentGenre] = useState('')
+    const [currentPlaylist, setCurrentPlaylist] = useState(playlist)
 
     // Sets real time variables to local storage when changed
     useEffect(() => {
@@ -53,8 +54,9 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
         sessionStorage.setItem('num-songs', numSongs);
         sessionStorage.setItem('explicit', JSON.stringify(explicit));
         sessionStorage.setItem('genre-options', JSON.stringify(genreOptions));
+        sessionStorage.setItem('playlist', JSON.stringify(currentPlaylist));
         }, 
-        [selectedGenres, numSongs, explicit, genreOptions]
+        [selectedGenres, numSongs, explicit, genreOptions, currentPlaylist]
     );
 
     // Handler for genre selection
@@ -124,6 +126,7 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
                 .then(response => {
                     console.log(response.data.data);
                     setPlaylist(response.data.data);
+                    setCurrentPlaylist(response.data.data);
 
                     setTimeout(() => {
                         redirect('/playlist');

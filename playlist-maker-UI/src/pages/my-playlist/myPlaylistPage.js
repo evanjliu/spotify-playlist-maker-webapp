@@ -86,9 +86,14 @@ function MyPlaylistPage ({myPlaylist}) {
             <div>
                 {myPlaylist && (myPlaylist).length > 0 ? (
                     
-                    <div>
+                    <div className="playlist-page">
                         <h1>My Playlist</h1>
                         <MyPlaylistComponent playlist={myPlaylist} />
+
+                        <h2>Want to Export your playlist or make a New playlist?</h2>
+                        <button onClick={handleNavigateExport} className="export-create-button">Export My Playlist!</button>
+                        <button onClick={handleNavigateCreate} className="export-create-button">Create A New Playlist!</button>
+                        <button onClick={handleAgain} className="export-create-button">Recreate My Playlist!</button>
                     </div>
                 ) : (
                     <div>
@@ -102,10 +107,7 @@ function MyPlaylistPage ({myPlaylist}) {
             <div>
                 {myPlaylist && myPlaylist.length > 0 ? (
                     <div>
-                        { MyPlaylistComponent }
-                        <button onClick={handleNavigateExport}>Export</button>
-                        <button onClick={handleNavigateCreate}>Create Again</button>
-                        <button onClick={handleAgain}>Create the Same Thing</button>
+
                     </div>
                 ) : (
                     <div>

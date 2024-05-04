@@ -1,6 +1,6 @@
 // Import dependencies
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Import navigation and CSS
 import Navigation from './components/Navigation.js';
@@ -41,6 +41,9 @@ function App() {
           </Routes>
         </section>
       </main>
+      <footer>
+
+      </footer>
     </div>
     </BrowserRouter>
   );

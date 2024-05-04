@@ -27,7 +27,7 @@ function MyPlaylistComponent ({playlist}) {
                         {playlist.map((song, index) => (
                             <tr key={index}>
                                 <td>{index + 1}</td>
-                                <td><a href={song.link_url}>{song.name}</a></td>
+                                <td><a href={song.link_url} className='song-link' target="_blank" rel="noopener noreferrer">{song.name}</a></td>
                                 <td>{song.album}</td>
                                 <td>{song.artist_name}</td>
                                 <td>{song.duration}</td>

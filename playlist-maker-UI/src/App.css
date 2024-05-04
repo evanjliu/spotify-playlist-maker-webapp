@@ -62,6 +62,7 @@
   --popup-background: #292828d7;
   --white: white;
   --light-blue: rgb(103, 146, 161);
+  --link:rgb(241, 134, 134);
 }
 
 * { 
@@ -299,6 +300,7 @@ input[type="number"], select, input[type="radio"] {
 .playlist-table th {
   padding: 8px;
   background-color: #333;
+  border-bottom: 1px solid var(--white); 
 }
 
 .playlist-table button, .button-remove {
@@ -318,8 +320,17 @@ input[type="number"], select, input[type="radio"] {
 .button-remove {
   border: 1px #dc3545 solid;
 }
+
 .button-remove:hover {
   border: 1px #dc3545 solid;
+}
+
+.song-link {
+  color: white;
+}
+
+.song-link:hover {
+  color: var(--link)
 }
 
 /* Home page */
@@ -353,10 +364,13 @@ input[type="number"], select, input[type="radio"] {
   color: var(--text);  
 }
 
-.popup-box ul, .popup-box li, .popup-box p, .popup-box h3{
+.popup-box ul, .popup-box li, .popup-box p, .popup-box h3 {
   width: 70%;
-  margin: 20px auto;
+  margin: 15px auto;
   text-align: left;
+}
+.popup-box h3 {
+  margin: 35px auto 1px auto;
 }
 
 .popup-close-button {
@@ -366,4 +380,12 @@ input[type="number"], select, input[type="radio"] {
 }
 .popup-close-button:hover {
   border: 1px var(--light-blue) solid;
+}
+
+/* Playlist Page */
+.playlist-page h2 {
+  margin-bottom: 25px;
+}
+.export-create-button {
+  font-size: 1.3em;
 }

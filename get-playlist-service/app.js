@@ -95,7 +95,7 @@ async function createPlaylist() {
 
         // Set access token
         spotify.setAccessToken(refreshedToken);
-        saveAccessToken(refreshAccessToken);
+        saveAccessToken(refreshedToken);
         myToken = refreshAccessToken;
 
         console.log("Token Refreshed!\n")
