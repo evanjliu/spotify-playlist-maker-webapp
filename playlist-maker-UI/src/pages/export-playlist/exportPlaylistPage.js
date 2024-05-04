@@ -15,7 +15,7 @@ function ExportPlaylistPage () {
         let confirm = window.confirm("Are you sure you want to download your playlist?\nA File will be downloaded to your device!");
         
         if (confirm) {
-
+            alert("Not implemented yet");
         }
     };
 
@@ -23,11 +23,12 @@ function ExportPlaylistPage () {
     return (
         <div>
             <h1>Export Playlist</h1>
+            <h1>**CURRENTLY NOT IMPLEMENTED**</h1>
 
             <section>
-                <label className="center-text">
+                <p className="center-text">
                     Here you can download your playlist in your file format of your choice! Use the form below and submit by clicking the green button!
-                </label>
+                </p>
             </section>
             
             <section>

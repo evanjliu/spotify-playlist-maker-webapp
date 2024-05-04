@@ -1,6 +1,10 @@
+// Import dependencies and components
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MyPlaylistComponent from "../../components/myPlaylist";
+
+// Import react icons
+import { FaArrowCircleDown } from "react-icons/fa";
 
 // Page
 function MyPlaylistPage ({myPlaylist}) {
@@ -77,17 +81,20 @@ function MyPlaylistPage ({myPlaylist}) {
     // Webpage
     return (
         <div>
-            <h1>My Playlist</h1>
+            
 
             <div>
                 {myPlaylist && (myPlaylist).length > 0 ? (
-                    <div><MyPlaylistComponent playlist={myPlaylist} /></div>
+                    
+                    <div>
+                        <h1>My Playlist</h1>
+                        <MyPlaylistComponent playlist={myPlaylist} />
+                    </div>
                 ) : (
                     <div>
-                        <p className="center-text bold-text">You haven't created a playlist yet! Click on the button below to create a playlist!</p>
+                        <h1>You haven't created a playlist yet!</h1>
+                        <p className="center-text bold-text"><FaArrowCircleDown /> Click on the button below to create a playlist! <FaArrowCircleDown /></p>
                         <button onClick={handleNavigateCreate}>Create Playlist</button>
-                        
-                        <MyPlaylistComponent playlist={myPlaylist} />
                     </div>
                 )}
             </div>

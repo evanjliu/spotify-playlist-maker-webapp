@@ -1,9 +1,13 @@
+// Import dependencies
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect} from 'react';
 import axios from 'axios';
 
+// Import components
+import PopUp from "../../components/PopupBox";
+
 // Page
-function CreatePlaylistPage ({setPlaylist}) {
+function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     // Redirects when called
     const redirect = useNavigate();
 
@@ -93,6 +97,11 @@ function CreatePlaylistPage ({setPlaylist}) {
             setGenreOptions(allGenres);
         }
     };
+
+    // Handler for popup
+    const handlePopUp = () => {
+        setPopUp(!popUp)
+    }
     
     // Handler for when the SUBMIT button is clicked
     const handleSubmit = async (e) => {
@@ -122,24 +131,28 @@ function CreatePlaylistPage ({setPlaylist}) {
                     
                 })
                 .catch(error => {
-                    console.error(error);
-                    alert("Something went wrong.");
+                    console.error(error.response.status);
+                    console.log(error.status)
+                    if (error.response.status === 400) {
+                        if (explicit === "no") {
+                        alert("Not enough songs were available to make a playlist. Your genres might be too specific or if you requested no explicit songs, there might have not been enough non-explicit songs to fulfill your request.");
+                        } else {
+                            alert("Not enough songs were available to make a playlist. Your genres might be too specific");
+                        }
+                    } else {
+                        alert("Internal server error. Request could not be completed.");
+                    }
                 });
         }
             
-    };
-
-    // Handles navigating for more information
-    const handleNavigate = (e) => {
-        e.preventDefault();
-        redirect('/');
     };
 
     return (
         <div>
             <h1>Create Playlist</h1>
             <p><b>Instructions: </b>In order to create a personalized playlist, select one or more of the following provided genres. You can also specify how many songs you would like in the playlist, and whether to include explicit songs.</p>
-            <p><span className="link" onClick={handleNavigate}>Click here</span> to learn more about how personalization works!</p>
+            <p className="center-text"><span className="link" onClick={handlePopUp}>Click here</span> to learn more about how personalization works!</p>
+            {popUp && <PopUp onClose={handlePopUp} setPopUp={setPopUp} />}
             
             <form onSubmit={handleSubmit} className="playlist-form">
                 <fieldset>
@@ -183,7 +196,7 @@ function CreatePlaylistPage ({setPlaylist}) {
                     <label>Allow Explicit Songs?</label>
                     <div className="explicit-radio">
                         <div>
-                            
+                            <label htmlFor="explicitYes" className='radio-label'>Yes
                             <input
                             type="radio"
                             id="explicitYes"
@@ -191,10 +204,11 @@ function CreatePlaylistPage ({setPlaylist}) {
                             value="yes"
                             defaultChecked={explicit === 'yes'}
                             onChange={handleExplicitChange}
-                            />
-                            <label htmlFor="explicitYes">Yes</label>
+                            /></label>
+
                         </div>
                         <div>
+                            <label htmlFor="explicitNo" className='radio-label'>No
                             <input
                             type="radio"
                             id="explicitNo"
@@ -202,8 +216,8 @@ function CreatePlaylistPage ({setPlaylist}) {
                             value="no"
                             defaultChecked={explicit === 'no'}
                             onChange={handleExplicitChange}
-                            />
-                            <label htmlFor="explicitNo">No</label>
+                            /></label>
+
                         </div>
                     </div>
     

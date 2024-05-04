@@ -16,7 +16,10 @@ import WhatsNewPage from './pages/whats-new/whatsNewPage';
 // App
 function App() {
 
-  const [playlist, setPlaylist] = useState([])
+  const [playlist, setPlaylist] = useState([]);
+  const [popUp, setPopUp] = useState(false);
+
+  // App return
   return (
     <BrowserRouter>
     <div className="App">
@@ -31,7 +34,7 @@ function App() {
         <section>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/create" element={<CreatePlaylistPage setPlaylist={setPlaylist} />} />
+            <Route path="/create" element={<CreatePlaylistPage setPlaylist={setPlaylist} popUp={popUp} setPopUp={setPopUp} />} />
             <Route path="/playlist" element={<MyPlaylistPage myPlaylist={playlist} />} />
             <Route path="/export" element={<ExportPlaylistPage />} />
             <Route path="/new" element={<WhatsNewPage />} /> 

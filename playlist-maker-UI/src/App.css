@@ -59,7 +59,9 @@
   --background: #333333;
   --main-background: #7e7d7d5b;
   --nav-background: black;
-  --popup-background: rgba(247, 233, 197, 0.897);
+  --popup-background: #292828d7;
+  --white: white;
+  --light-blue: rgb(103, 146, 161);
 }
 
 * { 
@@ -180,7 +182,7 @@ Form Elements
   max-width: 700px;
   margin: 50px auto;
   padding: 20px;
-  background-color: #333333;
+  background-color: var(--background);
   border-radius: 10px;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
 }
@@ -206,7 +208,7 @@ button:hover {
 label {
   display: block;
   margin-bottom: 5px;
-  color: #ffffff;
+  color: var(--white);
   font-size: 1.1em;
 }
 
@@ -218,13 +220,13 @@ input[type="number"], select, input[type="radio"] {
   border: none;
   border-radius: 5px;
   background-color: #555555;
-  color: #ffffff;
+  color: var(--white);
   font-size: 105%;
   text-align: center;
 }
 
 /* Style for radio button labels */
-input[type="radio"] + label {
+.radio-label {
   margin: 10px;
   font-weight: bold;
 }
@@ -237,6 +239,7 @@ input[type="radio"] + label {
 .explicit-radio input {
   margin-bottom: 0;
 }
+
 
 /* Style for the "X" button */
 .remove-button {
@@ -268,7 +271,7 @@ input[type="radio"] + label {
 
 .selected-genres li {
   margin-bottom: 5px;
-  color: #ffffff;
+  color: var(--white);
 
 }
 
@@ -298,18 +301,69 @@ input[type="radio"] + label {
   background-color: #333;
 }
 
-.playlist-table button {
-  background-color: #dc3545; /* Red color */
-  color: white;
+.playlist-table button, .button-remove {
+  background-color: #dc3545;
+  color: var(--white);
   border: none;
   padding: 6px 10px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.25s ease;
 }
 
-.playlist-table button:hover {
+.playlist-table button:hover, .button-remove:hover {
   background-color: #949494;
 }
 
+.button-remove {
+  border: 1px #dc3545 solid;
+}
+.button-remove:hover {
+  border: 1px #dc3545 solid;
+}
+
 /* Home page */
+.link {
+  font-weight: bold;
+  color: rgb(209, 72, 209);
+}
+
+/* Popup Box */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Ensure the overlay appears above everything else */
+}
+
+.popup-box {
+  background-color: var(--popup-background); /* Match the background color to your variable */
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-width: 70%;
+  max-height: 80%;
+  overflow: auto;
+  color: var(--text);  
+}
+
+.popup-box ul, .popup-box li, .popup-box p, .popup-box h3{
+  width: 70%;
+  margin: 20px auto;
+  text-align: left;
+}
+
+.popup-close-button {
+  cursor: pointer;
+  border: 1px var(--light-blue) solid;
+  background: var(--light-blue) ;
+}
+.popup-close-button:hover {
+  border: 1px var(--light-blue) solid;
+}
