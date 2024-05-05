@@ -2,10 +2,11 @@ const axios = require('axios');
 
 async function refreshAccessToken(accessToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT) {
     try {
-        const response = await axios.post(TOKEN_ENDPOINT, {
+        const response = await axios.get(TOKEN_ENDPOINT, {
             grant_type: 'refresh_token',
             refresh_token: accessToken,
             client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET
         }, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

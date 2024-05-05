@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaFileCsv, FaFile, FaFileCode, FaFileWord} from 'react-icons/fa';
 
 // Page
 function ExportPlaylistPage () {
     const [selectedFormat, setSelectedFormat] = useState('json');
+    const [playlistData, setPlaylistData] = useState();
+
+    // Retrieve the playlist data that has been manipulated from the playlist page
+    useEffect(() => {
+        // Retrieve 
+        const storedPlaylistData = JSON.parse(sessionStorage.getItem("playlist")) || [];
+        setPlaylistData(storedPlaylistData);
+    }, []);
 
     const handleFormatChange = (e) => {
         setSelectedFormat(e.target.value);
@@ -27,7 +35,10 @@ function ExportPlaylistPage () {
 
             <section>
                 <p className="center-text">
-                    Here you can download your playlist in your file format of your choice! Use the form below and submit by clicking the green button!
+                    Here you can download your playlist in your file format of your choice!
+                </p>
+                <p className="center-text">
+                    Select the format you would like below and then submit by clicking the green button!
                 </p>
             </section>
             

@@ -1,6 +1,6 @@
 // Import dependencies
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // Import navigation and CSS
 import Navigation from './components/Navigation.js';

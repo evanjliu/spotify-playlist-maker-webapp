@@ -103,20 +103,6 @@ function MyPlaylistPage ({myPlaylist}) {
                     </div>
                 )}
             </div>
-
-            <div>
-                {myPlaylist && myPlaylist.length > 0 ? (
-                    <div>
-
-                    </div>
-                ) : (
-                    <div>
-{/*                         <button onClick={handleNavigateExport}>Export</button>
-                        <button onClick={handleNavigateCreate}>Create Again</button>
-                        <button onClick={handleAgain}>Create the Same Thing</button> */}
-                    </div>
-                )}
-            </div>
         </div>
     )
 };

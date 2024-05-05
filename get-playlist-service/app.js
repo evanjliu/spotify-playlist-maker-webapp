@@ -91,12 +91,25 @@ async function createPlaylist() {
     // Token Refresh every hour
     setInterval( async () => {
         console.log("Refreshing Access Token...\n");
+        try {
         const refreshedToken = await refreshAccessToken(myToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
 
         // Set access token
         spotify.setAccessToken(refreshedToken);
         saveAccessToken(refreshedToken);
         myToken = refreshAccessToken;
+
+        } catch (error) {
+            console.error(error);
+            // Get new token because current one is broken and then set and save token
+            myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+            spotify.setAccessToken(myToken);
+            saveAccessToken(myToken);
+
+            // Test again
+            const retest3 = await spotify.searchTracks("Lover's Oath", {limit: 3});
+            console.log('Testing Token...\n\nTest Data: ', retest3.body, '\n');
+        }
 
         console.log("Token Refreshed!\n")
     }, 3600000); // Refresh token every hour
@@ -116,10 +129,9 @@ async function createPlaylist() {
         console.log('Recieved Message' + ': ' + msg + '\n');
 
         // Set User parameters to values to be used to make API call
-        numSongs = (request.numSongs);
+        numSongs = (request.limit_songs);
         explicit = (request.explicit);
         genres = [request.selectedGenres];
-        
 
         // Spotify Routes and API Calls
         spotify.getRecommendations({

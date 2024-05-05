@@ -15,7 +15,7 @@ function HomePage () {
                     <p>You will be able to export and save these personalized playlists to your local computer.</p>
                     <p className="center-text"><span className="link" onClick={() => redirect('new')}>Click here</span> to learn about new features!</p>
 
-                    <p className="center-text bold-text">Press the create button when you are ready to start!</p>
+                    <p className="center-text bold-text">Press the "Let's Create" button when you are ready to start!</p>
                 </section>
 
                 <button onClick={() => redirect('create')}>Let's Create</button>
