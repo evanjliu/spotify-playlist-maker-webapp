@@ -332,17 +332,24 @@ input[type="number"], select, input[type="radio"] {
   color: var(--link)
 }
 
-.removed-song {
-  background-color: #f0f0f0; 
-  color: #777; 
+.removed-song td, .removed-song a, .removed-song a:hover{
+  background-color: #000000; 
+  color: #323232; 
+  cursor: default;
 }
 
 .button-remove {
   border: 1px #dc3545 solid;
 }
 
-.button-remove:hover {
-  border: 1px #dc3545 solid;
+.button-undo {
+  border: 1px solid rgb(174, 138, 67);
+  background-color: rgb(174, 138, 67);
+  
+}
+
+.button-undo:hover {
+  border: 1px solid rgb(174, 138, 67);
 }
 
 /* Home page */
@@ -400,4 +407,23 @@ input[type="number"], select, input[type="radio"] {
 }
 .export-create-button {
   font-size: 1.3em;
+}
+
+/* What's New Page */
+.whats-new-page {
+  max-width: 80%;
+  margin: 10px auto;
+}
+.whats-new-page h1 h2 {
+  margin-bottom: 30px;
+
+}
+.whats-new-page h3 {
+  margin-bottom:5px;
+}
+.whats-new-page ul {
+  text-align: left;
+}
+.whats-new {
+  margin-bottom: 30px;
 }

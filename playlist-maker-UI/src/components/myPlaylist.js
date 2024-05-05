@@ -73,9 +73,9 @@ function MyPlaylistComponent ({playlist}) {
                                 <td>{song.duration}</td>
                                 <td>
                                     {removedIndices.includes(index) ? (
-                                        <button onClick={() => handleUndoRemove(index)}>Undo</button>
+                                        <button onClick={() => handleUndoRemove(index)} className="button-undo">Undo</button>
                                     ) : (
-                                        <button onClick={() => handleRemoveSong(index)}>Remove</button>
+                                        <button onClick={() => handleRemoveSong(index)} className="button-remove">Remove</button>
                                     )}
                                 </td>
                             </tr>

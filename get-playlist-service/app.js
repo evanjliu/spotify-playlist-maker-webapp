@@ -92,19 +92,27 @@ async function createPlaylist() {
     setInterval( async () => {
         console.log("Refreshing Access Token...\n");
         try {
-        const refreshedToken = await refreshAccessToken(myToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+        /* const refreshedToken = await refreshAccessToken(myToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT); */
 
         // Set access token
-        spotify.setAccessToken(refreshedToken);
+        /* spotify.setAccessToken(refreshedToken);
         saveAccessToken(refreshedToken);
-        myToken = refreshAccessToken;
+        myToken = refreshAccessToken; */
+        
 
-        } catch (error) {
-            console.error(error);
-            // Get new token because current one is broken and then set and save token
-            myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
-            spotify.setAccessToken(myToken);
-            saveAccessToken(myToken);
+        // Get new token because current one is broken and then set and save token
+        myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+        spotify.setAccessToken(myToken);
+        saveAccessToken(myToken);
+
+        // Test again
+        const retest3 = await spotify.searchTracks("Lover's Oath", {limit: 3});
+        console.log('Testing Token...\n\nTest Data: ', retest3.body, '\n');} catch (error) {
+        console.error(error);
+        // Get new token because current one is broken and then set and save token
+        myToken = await getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
+        spotify.setAccessToken(myToken);
+        saveAccessToken(myToken);
 
             // Test again
             const retest3 = await spotify.searchTracks("Lover's Oath", {limit: 3});
