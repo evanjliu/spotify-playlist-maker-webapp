@@ -1,10 +1,13 @@
 const axios = require('axios');
 
-async function refreshAccessToken(accessToken, CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT) {
+/* 
+    ***FUNCTION DOES NOT WORK CURRENTLY AND HAS NO CURRENT USE***
+*/
+async function refreshAccessToken(accessToken, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN) {
     try {
         const response = await axios.get(TOKEN_ENDPOINT, {
             grant_type: 'refresh_token',
-            refresh_token: accessToken,
+            refresh_token: REFRESH_TOKEN,
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET
         }, {

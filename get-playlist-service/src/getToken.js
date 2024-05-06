@@ -13,6 +13,9 @@ async function getAccessToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT) {
         });
 
         if (response.status === 200) {
+            console.log(response.data);
+            
+            // Extract token from object adn then return
             const accessToken = response.data.access_token;
             console.log('Access Token:', accessToken, '\n');
             return accessToken;
