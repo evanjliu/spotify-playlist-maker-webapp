@@ -134,8 +134,8 @@ async function createPlaylist() {
         console.log('Received Message' + ': ' + msg + '\n');
 
         // Set User parameters to values to be used to make API call
-        numSongs = (request.limit_songs);
-        explicit = (request.explicit);
+        numSongs = request.limit_songs;
+        explicit = request.explicit;
         genres = [request.selectedGenres];
 
         // Spotify Routes and API Calls

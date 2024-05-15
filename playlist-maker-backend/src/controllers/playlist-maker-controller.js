@@ -23,9 +23,9 @@ exports.createPlaylist = async (req, res) => {
         // Sends message to playlist-maker microservice
         while ((i < 3) && (cur_track_count < numSongs)) {
             response = await zmqUtils.getPlaylist({
-                limit_songs,
-                explicit,
-                selectedGenres
+                limit_songs: limit_songs,
+                explicit: explicit,
+                selectedGenres: selectedGenres
             });
 
             mod_arr = makePlaylistArray(response, numSongs, explicit, myPlaylist)
