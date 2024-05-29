@@ -1,7 +1,11 @@
 const zmqUtils = require('../ZeroMQ Modules/zmq-pipes');
 
+//----------------------------------------------------------------------
+// GET PLAYLIST
+//----------------------------------------------------------------------
+
 exports.createPlaylist = async (req, res) => {
-    console.log("Request Received! Now processing...\n")
+    console.log("Request Received! Now retrieving playlist...\n\n")
     try {
         const { numSongs, explicit, selectedGenres } = req.query;
         console.log('Current Request: ', req.query)
@@ -28,10 +32,10 @@ exports.createPlaylist = async (req, res) => {
                 selectedGenres
             });
 
-            mod_arr = makePlaylistArray(response, numSongs, explicit, myPlaylist)
+            mod_arr = makePlaylistArray(response, numSongs, explicit, myPlaylist);
 
-            myPlaylist = mod_arr[0]
-            cur_track_count = mod_arr[1]
+            myPlaylist = mod_arr[0];
+            cur_track_count = mod_arr[1];
 
             i++;
         }
@@ -58,16 +62,62 @@ exports.createPlaylist = async (req, res) => {
     }
 };
 
+//----------------------------------------------------------------------
+// GET SONGS LIST
+//----------------------------------------------------------------------
+exports.getSongList = async (req, res) => {
+    console.log("Request Received! Now getting list of songs...\n\n")
+    try {
+        const { song_name } = req.query;
+        console.log('Current Request: ', req.query)
+
+        let mod_arr = [];
+        let myPlaylist = [];
+        let cur_track_count = 0;
+        let response = [];
+        let numSongs = 15;
+
+        // Sends message to song-search microservice
+        response = await zmqUtils.getSongs({
+            num_songs: numSongs,
+            song_name: song_name,
+            explicit: 'yes'
+        });
+
+        // Make playlist
+        mod_arr = makePlaylistArray(response, 15, 'yes', myPlaylist);
+        myPlaylist = mod_arr[0];
+        cur_track_count = mod_arr[1];
+
+        console.log('Playlist: ', myPlaylist, '\nNumber of Spotify API requests: 1\n');
+
+        if (cur_track_count == 0) {
+            res.status(400).json({error: 'Song does not exist, or an error occured.'});
+        } else if ( cur_track_count < numSongs) {
+            // Sends status code 200 if successful
+            res.status(200).json({message: "Songs retreived successfully, but there weren't enough songs to fill the search.", data: myPlaylist});
+            console.log('Playlist created successfully, but not enough songs matched the given name.\n');
+        } else {
+            // Sends status code 200 if successful
+            res.status(200).json({message: 'Songs list created successfully\n', data: myPlaylist});
+            console.log('Song list created successfully\nReady for a new request...\n');
+        }
+
+    } catch (error) {
+        console.error(error);
+
+        // Sends status code 500 if unsuccessful
+        res.status(500).json({error: 'Internal server error'});
+    }
+
+};
+
 function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
             // Define variables
             let playlist = cur_playlist;
             let cur_track = [];
             let user_explicit = false;
-            let duration = 0;
-            let totalSeconds = 0;
-            let minutes = 0;
-            let seconds = 0;
-            let final_duration = "";
+            let duration = "";
             let name = "";
             let album = "";
             let artist = "";
@@ -83,17 +133,8 @@ function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
                 if ((!result[i].explicit) || (result[i].explicit === user_explicit)) {
 
                     // Get duration
-                    duration = result[i].duration_ms;
-                    
-    
-                    totalSeconds = Math.floor(duration / 1000);
-    
-                    // Calculate minutes and remaining seconds
-                    minutes = Math.floor(totalSeconds / 60);
-                    seconds = totalSeconds % 60;
-    
-                    final_duration = minutes.toString() + ":" + seconds.toString().padStart(2, '0');
-    
+                    duration = getDuration(result[i].duration_ms);
+
                     // Get Name
                     if (result[i].name){
                         name = result[i].name;
@@ -126,7 +167,7 @@ function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
                         name: name,
                         album: album,
                         artist_name: artist,
-                        duration: final_duration,
+                        duration: duration,
                         link_url: link
                     };
                     playlist.push(cur_track);
@@ -138,3 +179,14 @@ function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
 
             return [playlist, playlist.length]
 };
+
+function getDuration(duration) {               
+    let totalSeconds = Math.floor(duration / 1000);
+
+    // Calculate minutes and remaining seconds
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+    let final_duration = minutes.toString() + ":" + seconds.toString().padStart(2, '0');
+
+    return final_duration;
+}

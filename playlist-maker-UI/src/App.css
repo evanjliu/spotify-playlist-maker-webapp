@@ -217,7 +217,7 @@ label {
 }
 
 /* Style for input fields */
-input[type="number"], select, input[type="radio"] {
+input[type="number"], select, input[type="radio"] input[type="text"] {
   width: 50%;
   padding: 10px;
   margin-bottom: 30px;

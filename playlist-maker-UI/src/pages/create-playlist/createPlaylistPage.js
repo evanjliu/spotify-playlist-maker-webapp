@@ -45,8 +45,9 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     const [numSongs, setNumSongs] = useState(initialNumSongs);
     const [explicit, setExplicit] = useState(initialExplicit);
     const [genreOptions, setGenreOptions] = useState(initialGenreOptions);
-    const [currentGenre, setCurrentGenre] = useState('')
-    const [currentPlaylist, setCurrentPlaylist] = useState(playlist)
+    const [currentGenre, setCurrentGenre] = useState('');
+    const [currentPlaylist, setCurrentPlaylist] = useState(playlist);
+    const [songName, setSongName] = useState('');
 
     // Sets real time variables to local storage when changed
     useEffect(() => {
@@ -83,6 +84,11 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     const handleNumSongsChange = (e) => {
         setNumSongs(parseInt(e.target.value));
     };
+
+    // Handler for changing name of song
+    const handleSongNameChange = (e) => {
+        setSongName(e.target.value);
+    }
     
     // Handler for updating explicit variable
     const handleExplicitChange = (e) => {
@@ -104,6 +110,34 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     const handlePopUp = () => {
         setPopUp(!popUp)
     }
+
+    // Handler for searching a song
+    const handleGetSong = async (e) => {
+        e.preventDefault();
+
+        axios.get('get-songs', {
+            params: {
+                song_name: songName
+            }
+        })
+        .then(response => {
+            console.log(response.data.data);
+            
+            // Process playlist here
+            //
+            //
+
+        })
+        .catch(error => {
+            console.error(error.response.status);
+            console.log(error.status)
+            if (error.response.status === 400) {
+                alert("Not enough songs were available to make a list.");
+            } else {
+                alert("Internal server error. Request could not be completed.");
+            }
+        });
+    };
     
     // Handler for when the SUBMIT button is clicked
     const handleSubmit = async (e) => {
@@ -157,6 +191,21 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
             <p className="center-text"><span className="link" onClick={handlePopUp}>Click here</span> to learn more about how personalization works!</p>
             {popUp && <PopUp onClose={handlePopUp} setPopUp={setPopUp} />}
             
+            <form onSubmit={handleGetSong} className="playlist-form">
+                <fieldset>
+                    <div className="songInput">
+                        <label htmlFor="songName">Search for a Song to Retreive Genres:</label>
+                            <input
+                                type="text"
+                                id="songName"                 
+                                value={songName}
+                                onChange={handleSongNameChange}
+                                required
+                            />
+                    </div>
+                </fieldset>
+            </form>
+
             <form onSubmit={handleSubmit} className="playlist-form">
                 <fieldset>
                     <div className="numSongsInput">
