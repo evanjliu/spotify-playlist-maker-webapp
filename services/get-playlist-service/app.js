@@ -3,9 +3,6 @@ const zmq = require('zeromq');
 
 // Import get token functions
 // Currently refresh token does not work and is unused
-const { getAccessToken } = require('./src/getToken');
-const { refreshAccessToken } = require('./src/refreshAccessToken');
-const { readAccessToken, saveAccessToken, readRefreshToken, saveRefreshToken } = require('./src/accessTokens');
 const {getToken, refreshToken} = require('./src/checkTokens');
 require('dotenv').config();
 
