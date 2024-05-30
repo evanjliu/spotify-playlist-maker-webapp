@@ -5,6 +5,7 @@ import axios from 'axios';
 
 // Import components
 import PopUp from "../../components/PopupBox";
+import SongTable from '../../components/songTable';
 
 // Page
 function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
@@ -48,6 +49,10 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
     const [currentGenre, setCurrentGenre] = useState('');
     const [currentPlaylist, setCurrentPlaylist] = useState(playlist);
     const [songName, setSongName] = useState('');
+    const [songs, setSongs] = useState([]);  
+    const [showSongTable, setShowSongTable] = useState(false);
+    const [currentSongName, setCurrentSongName] = useState('');
+    const [genres, setGenres] = useState([]);
 
     // Sets real time variables to local storage when changed
     useEffect(() => {
@@ -103,6 +108,11 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
             setNumSongs(20);
             setExplicit("no");
             setGenreOptions(allGenres);
+            setSongs([]);
+            setShowSongTable(false);
+            setCurrentSongName('');
+            setCurrentGenre([]);
+            setSongName('');
         }
     };
 
@@ -122,17 +132,38 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
         })
         .then(response => {
             console.log(response.data.data);
-            
-            // Process playlist here
-            //
-            //
-
+            setSongs(response.data.data);
         })
         .catch(error => {
-            console.error(error.response.status);
-            console.log(error.status)
+            console.error("Error: ", error.response.status);
             if (error.response.status === 400) {
                 alert("Not enough songs were available to make a list.");
+            } else {
+                alert("Internal server error. Request could not be completed.");
+            }
+        });
+    };
+
+    // Handler for Retrieving Genres of a Song
+    const handleSelectSong = (songId, songName) => {
+        console.log("Selected song ID:", songId);
+        setShowSongTable(false);
+        setCurrentGenre([]);
+
+        axios.get('get-genres', {
+            params: {
+                song_id: songId
+            }
+        })
+        .then(response => {
+            console.log("Message: ", response.data.message, "Genre Data: ", response.data.data);
+            setGenres(response.data.data);
+            setCurrentSongName(songName);
+        })
+        .catch(error => {
+            console.error("Error: ", error.response.status);
+            if (error.response.status === 400) {
+                alert("Genres were not retrieved. Song may be unavailable in database.");
             } else {
                 alert("Internal server error. Request could not be completed.");
             }
@@ -193,8 +224,9 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
             
             <form onSubmit={handleGetSong} className="playlist-form">
                 <fieldset>
+                    <h2>Song-Genre Searcher</h2>
                     <div className="songInput">
-                        <label htmlFor="songName">Search for a Song to Retreive Genres:</label>
+                        <label htmlFor="songName">Search for a specific song to retreive genre ideas:</label>
                             <input
                                 type="text"
                                 id="songName"                 
@@ -203,11 +235,67 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
                                 required
                             />
                     </div>
+                    <button type="submit">Search Songs</button>
+                </fieldset>
+
+                {/* Song list button only shows when pressed */}
+                <fieldset>
+                    {/* Song List button */}
+                    {(songs.length > 0 && !showSongTable) && (
+                        <div className="song-table">
+                            <h2>Search Results</h2>
+                            <label>Click the "Show Songs" button to see your searched songs!</label>
+                            <button onClick={() => setShowSongTable(true)}>Show Songs</button>
+                        </div>
+                    )}
+
+                    {/* Song Table Popup */}
+                    {showSongTable && (
+                        <div>
+                            <h2>Search Results</h2>
+                            <label>Choose a song to retrieve the genres of a specific song.</label>
+                            <SongTable 
+                                songs={songs} 
+                                onSelectSong={handleSelectSong}
+                                onClose={() => setShowSongTable(false)}
+                            />
+                        </div>
+                    )}
+                </fieldset>
+
+                {/* Genres */}
+                <fieldset>
+                    {currentSongName != '' &&
+                        <div>
+                            <h2>Song Genres</h2>
+                            <label className="text-left"><b>Current Selected Song:</b> {currentSongName}</label>
+                    
+                            {/* If genres array is has stuff */}
+                            {genres.length > 0 ? (
+                                <div> 
+                                    <label className="text-left"><b>Genres:</b></label>
+                                    <ul>
+                                        {genres.map((genre, index) => (
+                                            <li key={index}>{genre}</li>
+                                        ))}
+                                    </ul>
+                                    <p><b>Note:</b> Genres produced by this search function are not all included in genre dropdown list in the next section.</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <label>No genre data is available in the database for this specific song!</label>
+                                </div>
+                            )}
+                        </div>
+                    }
+                   
                 </fieldset>
             </form>
 
+            {/* Form for Song genres, number of songs, and explicit */}
             <form onSubmit={handleSubmit} className="playlist-form">
                 <fieldset>
+                <h2>Playlist Parameters</h2>
                     <div className="numSongsInput">
                         <label htmlFor="numberOfSongs">Number of Songs (Max 50):</label>
                         <input

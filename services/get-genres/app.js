@@ -34,9 +34,9 @@ async function createPlaylist() {
     console.log('Microservice is up and Running. \n');
 
     // ZeroMQ sockets
-    // Set up reply server, which replies to all messages send to port 4444 on local device
+    // Set up reply server, which replies to all messages send to port 3333 on local device
     const sock = new zmq.Reply();
-    await sock.bind('tcp://*:4444');
+    await sock.bind('tcp://*:3333');
 
     // Get token from text file and check
     let token = await getToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
@@ -46,7 +46,7 @@ async function createPlaylist() {
     // Spotify Tokens expire every hour, so it checks every hour to refresh.
     setInterval(async () => {
         token = await refreshToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
-        console.log("Token Refreshed!\n\nReady for incoming requests on port 4444...\n\n");
+        console.log("Token Refreshed!\n\nReady for incoming requests on port 3333...\n\n");
 
     }, 3500000); // Refresh token every hour
 
@@ -55,56 +55,62 @@ async function createPlaylist() {
     //-------------------------------------------------
 
     // Define variables
-    let songName = "Gurenge";
+    let songId = "0qMip0B2D4ePEjBJvAtYre";
+    let artistId = "0blbVefuxOGltDBa00dspv";
+    let genres = [];
 
-
-    // Recieves ZeroMQ messages on port 4444.
+    // Recieves ZeroMQ messages on port 3333.
     // For every message recieved, processes it and replies in the same port.
     for await (const [msg] of sock) {
-
         let request = JSON.parse(msg);
         console.log('Received Message' + ': ' + msg + '\n');
 
         // Set User parameters to values to be used to make API call
-        songName = (request.song_name);
+        songId = (request.song_id);
+
         // Spotify Routes and API Calls
         try {
-            spotify.searchTracks(songName, { limit: 15 })
+            // Get track for album ID
+            spotify.getTrack(songId)
                 .then(function (data) {
 
-                    const items = data.body.tracks;
-                    // Prints song name to console
-                    for (let i = 0; i < items.items.length; i++) {
-                        console.log(i + 1, ': Song Name - ', items.items[i].name)
-                    };
-                    
-                    // Send back the playlist with tracks info only. See:
-                    // https://developer.spotify.com/documentation/web-api/reference/get-recommendations
-                    // for how the tracks object is formatted.
-                    sock.send(JSON.stringify(items));
+                    artistId = data.body.artists[0].id;
+                    console.log("Artist ID: ", artistId);
 
-                }), function (err) {
+                    spotify.getArtist(artistId)
+                        .then(function (data) {
+
+                            genres = data.body.genres;
+                            console.log("Genres: ", genres);
+
+                            // Send back the playlist with tracks info only. See:
+                            // https://developer.spotify.com/documentation/web-api/reference/get-recommendations
+                            // for how the tracks object is formatted.
+                            sock.send(JSON.stringify(genres));
+
+                            }), function (err) {
+                            console.error('Something went wrong.', err);
+                        }
+                    }), function (err) {
                     console.error('Something went wrong.', err);
                 }
+
+
         } catch(error) {
-            console.log('Attempting to get new token...\n')
+            console.log('Something went wrong with first attempt...Attempting to get new token...\n');
             token = await refreshToken(CLIENT_ID, CLIENT_SECRET, TOKEN_ENDPOINT);
             
             // After getting token, retries the request
-            spotify.searchTracks(songName, { limit: 15 })
+            spotify.getTrack(songId)
                     .then(function (data) {
                         // Send back the playlist with tracks info only. See:
                         // https://developer.spotify.com/documentation/web-api/reference/get-recommendations
                         // for how the tracks object is formatted.
-                        const items = data.body.tracks;
-    
-                        // Prints song name to console
-                        for (let i = 0; i < items.length; i++) {
-                            console.log(i + 1, ': Song Name - ', items[i].name)
-                        };
+                        const items = data.body.album.id;
+                        console.log("Items: ", items);
 
                         // Send back song list with song info.
-                        sock.send(JSON.stringify(songsList[0]));
+                        sock.send(JSON.stringify(items));
     
                     }), function (err) {
                         console.error('Something went wrong.', err);

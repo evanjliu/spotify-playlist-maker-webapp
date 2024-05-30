@@ -1,14 +1,14 @@
+const { response } = require('express');
 const zmqUtils = require('../ZeroMQ Modules/zmq-pipes');
 
 //----------------------------------------------------------------------
 // GET PLAYLIST
 //----------------------------------------------------------------------
-
 exports.createPlaylist = async (req, res) => {
     console.log("Request Received! Now retrieving playlist...\n\n")
     try {
         const { numSongs, explicit, selectedGenres } = req.query;
-        console.log('Current Request: ', req.query)
+        console.log('Current Request to Port 5555: ', req.query)
 
         let mod_arr = [];
         let myPlaylist = [];
@@ -69,7 +69,7 @@ exports.getSongList = async (req, res) => {
     console.log("Request Received! Now getting list of songs...\n\n")
     try {
         const { song_name } = req.query;
-        console.log('Current Request: ', req.query)
+        console.log('Current Request to Port 4444: ', req.query)
 
         let mod_arr = [];
         let myPlaylist = [];
@@ -85,7 +85,7 @@ exports.getSongList = async (req, res) => {
         });
 
         // Make playlist
-        mod_arr = makePlaylistArray(response, 15, 'yes', myPlaylist);
+        mod_arr = makeSongArray(response.items, numSongs, 'yes', myPlaylist);
         myPlaylist = mod_arr[0];
         cur_track_count = mod_arr[1];
 
@@ -112,6 +112,41 @@ exports.getSongList = async (req, res) => {
 
 };
 
+//----------------------------------------------------------------------
+// GET SONGS LIST
+//----------------------------------------------------------------------
+exports.getGenres = async (req, res) => {
+    console.log("Request Received! Now getting list of genres...\n\n")
+    try {
+        const { song_id } = req.query;
+        console.log('Current Request to Port 3333: ', req.query)
+
+        // Sends message to song-search microservice
+        let response = await zmqUtils.getGenres({
+            song_id: song_id,
+        });
+
+        console.log('Data ', response, '\nNumber of Spotify API requests: 1\n');
+        let genres = response;
+
+        if (!genres) {
+            res.status(400).json({error: 'No genres are available for this song, or an error occured.'});
+        } else {
+            // Sends status code 200 if successful
+            res.status(200).json({message: 'Genres retreived successfully\n', data: genres});
+            console.log('\nReady for a new request...\n');
+        }
+    } catch (error) {
+        console.error(error);
+
+        // Sends status code 500 if unsuccessful
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
+//----------------------------------------------------------
+// Make Playlist Array for Song Information
+//----------------------------------------------------------
 function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
             // Define variables
             let playlist = cur_playlist;
@@ -178,6 +213,84 @@ function makePlaylistArray(result, song_limit, explicit, cur_playlist) {
             };
 
             return [playlist, playlist.length]
+};
+
+//----------------------------------------------------------
+// Make Song Array with Spotify ID 
+//----------------------------------------------------------
+function makeSongArray(result, song_limit, explicit, cur_playlist) {
+    // Define variables
+    let playlist = cur_playlist;
+    let cur_track = [];
+    let user_explicit = false;
+    let duration = "";
+    let name = "";
+    let album = "";
+    let artist = "";
+    let link = "";
+    let id = "";
+    let i = 0;
+
+    if (explicit === 'yes'){
+        user_explicit = true;
+    }
+
+    // Process result and place needed information into playlist array
+    while ((i < result.length) && (playlist.length < song_limit)) {
+        if ((!result[i].explicit) || (result[i].explicit === user_explicit)) {
+
+            // Get duration
+            duration = getDuration(result[i].duration_ms);
+
+            // Get Name
+            if (result[i].name){
+                name = result[i].name;
+            } else {
+                name = "";
+            }
+            
+            // Get album name
+            if (result[i].album.name) {
+                album = result[i].album.name;
+            } else {
+                album = "";
+            }
+
+            // Get artist_name 
+            if (result[i].artists[0].name) {
+                artist = result[i].artists[0].name;
+            } else {
+                artist = "";
+            }
+
+            if (result[i].external_urls.spotify) {
+                link = result[i].external_urls.spotify;
+            } else {
+                link = ""
+            }
+
+            if (result[i].id) {
+                id = result[i].id;
+            } else {
+                id = ""
+            }
+
+            // Make current track dictionary
+            cur_track = {
+                name: name,
+                album: album,
+                artist_name: artist,
+                duration: duration,
+                link_url: link,
+                id: id
+            };
+            playlist.push(cur_track);
+        }
+        // Increase index
+        i++;
+    };
+
+    return [playlist, playlist.length]
 };
 
 function getDuration(duration) {               

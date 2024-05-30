@@ -52,10 +52,11 @@
 
 /* root variables */
 :root {
-  --red: red;
+  --red: rgb(196, 25, 25);
   --gold: gold;
   --text: white;
   --text-dark: black;
+  --h2-color: rgb(215, 242, 255);
   --background: #333333;
   --main-background: #7e7d7d5b;
   --nav-background: black;
@@ -123,13 +124,24 @@ h1 {
   font-size: 32px;
 }
 
+h2 {
+  margin-bottom: 20px;
+  color:var(--h2-color);
+}
+
 /* Classes for manipulating text */
 .center-text {
   text-align: center;
 }
+
+.left-text{
+  float: left;
+}
+
 .bold-text {
   font-weight: bold;
 }
+
 .link-text {
   color:lightblue
 }
@@ -191,6 +203,22 @@ Form Elements
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
+.playlist-form label.text-left, ul {
+  text-align: left;
+  padding-left: 80px;
+}
+
+.playlist-form ul{
+  list-style-type:square; 
+  margin-left: 0;
+  padding-left: 150px;
+}
+
+.playlist-form li {
+  margin-bottom: 10px; 
+  color: var(--white); 
+}
+
 button {
   background-color: #1db954; 
   color: rgb(255, 255, 255);
@@ -217,7 +245,7 @@ label {
 }
 
 /* Style for input fields */
-input[type="number"], select, input[type="radio"] input[type="text"] {
+input[type="number"], select, input[type="radio"], input[type="text"] {
   width: 50%;
   padding: 10px;
   margin-bottom: 30px;
@@ -259,6 +287,20 @@ input[type="number"], select, input[type="radio"] input[type="text"] {
 }
 .reset-button:hover {
   border: #8f2f2f 1px solid;
+}
+
+/* Song Table */
+.song-table {
+  font-size: 100%;
+}
+
+.close-btn {
+  background-color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.close-btn:hover {
+  border: 1px solid var(--red);
 }
 
 /* Style for the selected genres list */
@@ -368,18 +410,19 @@ input[type="number"], select, input[type="radio"] input[type="text"] {
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 999; /* Ensure the overlay appears above everything else */
+  align-items:start;
+  z-index: 999; 
 }
 
 .popup-box {
-  background-color: var(--popup-background); /* Match the background color to your variable */
+  background-color: var(--popup-background); 
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   max-width: 70%;
-  max-height: 80%;
+  max-height: 85%;
   overflow: auto;
+  margin-top:100px;
   color: var(--text);  
 }
 
