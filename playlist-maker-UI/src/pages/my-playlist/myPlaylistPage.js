@@ -91,7 +91,7 @@ function MyPlaylistPage ({myPlaylist}) {
                         <MyPlaylistComponent playlist={myPlaylist} />
 
                         <h2>Want to Export your playlist or make a New playlist?</h2>
-                        <button onClick={handleNavigateExport} className="export-create-button">Export My Playlist!</button>
+                        <button onClick={handleNavigateExport} className="export-create-button">Download/Email My Playlist!</button>
                         <button onClick={handleNavigateCreate} className="export-create-button">Create A New Playlist!</button>
                         <button onClick={handleAgain} className="export-create-button">Recreate My Playlist!</button>
                     </div>

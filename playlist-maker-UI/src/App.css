@@ -217,6 +217,7 @@ Form Elements
 .playlist-form li {
   margin-bottom: 10px; 
   color: var(--white); 
+  text-align: center;
 }
 
 button {
@@ -245,7 +246,7 @@ label {
 }
 
 /* Style for input fields */
-input[type="number"], select, input[type="radio"], input[type="text"] {
+input[type="number"], select, input[type="radio"], input[type="text"], input[type="email"] {
   width: 50%;
   padding: 10px;
   margin-bottom: 30px;

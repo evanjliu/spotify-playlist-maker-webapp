@@ -144,6 +144,38 @@ exports.getGenres = async (req, res) => {
     }
 };
 
+//----------------------------------------------------------------------
+// SEND EMAIL
+//----------------------------------------------------------------------
+exports.sendEmail = async (req, res) => { 
+    console.log("Request Received! Now sending email...\n\n")
+    try {
+        const { emailAddress, playlist } = req.query;
+        console.log('Current Request to Port 2222: ', req.query);
+
+        let response = await zmqUtils.sendEmail({
+            emailAddress: emailAddress,
+            playlist: playlist
+        });
+
+        console.log('Response: ', response, '\n');
+
+        if (!response) {
+            res.status(200).json({message: 'Error, email was not sent\n', data: response});
+            console.log('\nReady for new request...\n');
+        } else {
+            // Sends status code 200 if successful
+            res.status(200).json({message: 'Email sent successfully.\n', data: response});
+            console.log('\nReady for new request...\n');
+        };
+    } catch (error) {
+        console.error(error);
+
+        // Sends status code 500 if unsuccessful
+        res.status(500).json({error: 'Internal server error'});
+    }
+};
+
 //----------------------------------------------------------
 // Make Playlist Array for Song Information
 //----------------------------------------------------------

@@ -56,3 +56,22 @@ exports.getGenres = async (message) => {
     // Parse response (if necessary) and return
     return JSON.parse(response.toString());
 };
+
+//-------------------------------------------
+// SEND EMAIL
+//-------------------------------------------
+exports.sendEmail = async (message) => {
+        // Create new socket and to a new port
+        const sock = new zmq.Request();
+        sock.connect('tcp://localhost:2222'); 
+    
+        // Convert message to string (or any other format required)
+        const stringifiedMessage = JSON.stringify(message);
+    
+        // Send message and await response
+        sock.send(stringifiedMessage);
+        const [response] = await sock.receive();
+    
+        // Parse response (if necessary) and return
+        return JSON.parse(response.toString());
+};
