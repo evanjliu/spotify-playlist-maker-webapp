@@ -1,5 +1,7 @@
 const { response } = require('express');
 const zmqUtils = require('../ZeroMQ Modules/zmq-pipes');
+const fs = require('fs');
+const path = require('path');
 
 //----------------------------------------------------------------------
 // GET PLAYLIST
@@ -176,6 +178,50 @@ exports.sendEmail = async (req, res) => {
     }
 };
 
+//----------------------------------------------------------------------
+// DOWNLOAD PLAYLIST AS CSV
+//----------------------------------------------------------------------
+exports.getCSV = async (req, res) => {
+    console.log("Request Received! Now generating CSV...\n\n");
+
+    const { playlist } = req.query;
+    const filePath = path.resolve(__dirname, '../../../CSV-conversion-pipe.txt');
+
+    let response = [
+        "convert",
+        playlist
+    ];
+
+    // Verify directory exists or create it
+    const dirPath = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    // Write the request to the pipe.txt file in JSON format
+    fs.writeFile(filePath, JSON.stringify(response, null, 2), (err) => {
+        if (err) {
+            console.error("Failed to write to file:", err);
+            res.status(500).send('Failed to initiate conversion');
+            return;
+        }
+
+        console.log("Request written to pipe.txt successfully.");
+
+        // Start monitoring the file for changes to detect when the CSV is ready
+        monitorFileChanges(filePath, res);
+    });
+};
+
+//----------------------------------------------------------------------
+// DOWNLOAD PLAYLIST AS JSON
+//----------------------------------------------------------------------
+exports.getJSON = async (req,res) => {
+    console.log("Request Received! Now sending email...\n\n")
+
+
+};
+
 //----------------------------------------------------------
 // Make Playlist Array for Song Information
 //----------------------------------------------------------
@@ -325,6 +371,9 @@ function makeSongArray(result, song_limit, explicit, cur_playlist) {
     return [playlist, playlist.length]
 };
 
+//----------------------------------------------------------
+// Gets duration from milliseconds
+//----------------------------------------------------------
 function getDuration(duration) {               
     let totalSeconds = Math.floor(duration / 1000);
 
@@ -334,4 +383,66 @@ function getDuration(duration) {
     let final_duration = minutes.toString() + ":" + seconds.toString().padStart(2, '0');
 
     return final_duration;
+};
+
+//----------------------------------------------------------
+// Monitors and returns file path for CSV
+//----------------------------------------------------------
+function monitorFileChanges(filePath, res) {
+    let responseSent = false;  // Flag to track whether a response has been sent
+
+    const watcher = fs.watch(filePath, (eventType, filename) => {
+        if (eventType === 'change') {
+            console.log(`File ${filename} has been modified`);
+
+            // Retry reading the file up to 5 times in case of incomplete data
+            let attempts = 0;
+            const maxAttempts = 5;
+
+            const readAndParseFile = () => {
+                fs.readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        console.error("Error reading the file after changes:", err);
+                        if (!responseSent) {
+                            res.status(500).json({ error: "Failed to read the file" });
+                            responseSent = true;
+                        }
+                        return;
+                    }
+
+                    try {
+                        let jsonData = JSON.parse(data);
+                        if (jsonData.csv_path && !responseSent) {
+                            console.log("CSV file path detected, conversion confirmed.");
+                            const csvFullPath = path.resolve(jsonData.csv_path);
+                            res.download(csvFullPath, 'My_Playlist.csv', (err) => {
+                                if (err) {
+                                    console.error("Error downloading the file:", err);
+                                    res.status(500).send("Failed to download the playlist.");
+                                }
+                            });
+                            responseSent = true;
+                            console.log("Ready for more requests...\n");
+                            watcher.close();
+                        }
+                    } catch (parseErr) {
+                        attempts += 1;
+                        if (attempts < maxAttempts) {
+                            console.log("Retrying to read and parse the file...");
+                            setTimeout(readAndParseFile, 1000); // Retry after 1 second
+                        } else {
+                            console.error("Error parsing JSON data from file:", parseErr);
+                            if (!responseSent) {
+                                res.status(500).json({ error: "Error parsing JSON data" });
+                                responseSent = true;
+                                console.log("Ready for more requests...\n");
+                            }
+                        }
+                    }
+                });
+            };
+
+            readAndParseFile();
+        }
+    });
 }

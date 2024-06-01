@@ -58,7 +58,6 @@ function MyPlaylistPage ({myPlaylist}) {
     };
 
     const handleNavigateCreate = (e) => {
-
         
         // Reset all parameters
         setSelectedGenres([]);

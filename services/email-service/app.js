@@ -41,12 +41,12 @@ async function emailService() {
 function createTransport() {
     // Nodemailer transporter setup
     let transporter = mail.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
+        host: process.env.EMAIL_HOST1,
+        port: process.env.EMAIL_PORT1,
         secure: false,
         auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD
+            user: process.env.EMAIL_USERNAME1,
+            pass: process.env.EMAIL_PASSWORD1
         }
     });
 

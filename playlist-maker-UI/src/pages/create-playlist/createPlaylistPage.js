@@ -113,6 +113,7 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
             setCurrentSongName('');
             setCurrentGenre([]);
             setSongName('');
+            setCurrentPlaylist([]);
         }
     };
 
@@ -222,149 +223,151 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
             <p className="center-text"><span className="link" onClick={handlePopUp}>Click here</span> to learn more about how personalization works!</p>
             {popUp && <PopUp onClose={handlePopUp} setPopUp={setPopUp} />}
             
-            <form onSubmit={handleGetSong} className="playlist-form">
-                <fieldset>
-                    <h2>Song-Genre Searcher</h2>
-                    <div className="songInput">
-                        <label htmlFor="songName">Search for a specific song to retreive genre ideas:</label>
+            <section className="playlist-forms-container">
+                <form onSubmit={handleGetSong} className="playlist-form">
+                    <fieldset>
+                        <h2>Song-Genre Searcher</h2>
+                        <div className="songInput">
+                            <label htmlFor="songName">Search for a specific song to retreive genre ideas:</label>
+                                <input
+                                    type="text"
+                                    id="songName"                 
+                                    value={songName}
+                                    onChange={handleSongNameChange}
+                                    required
+                                />
+                        </div>
+                        <button type="submit">Search Songs</button>
+                    </fieldset>
+
+                    {/* Song list button only shows when pressed */}
+                    <fieldset>
+                        {/* Song List button */}
+                        {(songs.length > 0 && !showSongTable) && (
+                            <div className="song-table">
+                                <h2>Search Results</h2>
+                                <label>Click the "Show Songs" button to see your searched songs!</label>
+                                <button onClick={() => setShowSongTable(true)}>Show Songs</button>
+                            </div>
+                        )}
+
+                        {/* Song Table Popup */}
+                        {showSongTable && (
+                            <div>
+                                <h2>Search Results</h2>
+                                <label>Choose a song to retrieve the genres of a specific song.</label>
+                                <SongTable 
+                                    songs={songs} 
+                                    onSelectSong={handleSelectSong}
+                                    onClose={() => setShowSongTable(false)}
+                                />
+                            </div>
+                        )}
+                    </fieldset>
+
+                    {/* Genres */}
+                    <fieldset>
+                        {currentSongName != '' &&
+                            <div>
+                                <h2>Song Genres</h2>
+                                <label className="text-left"><b>Current Selected Song:</b> {currentSongName}</label>
+                        
+                                {/* If genres array is has stuff */}
+                                {genres.length > 0 ? (
+                                    <div className="song-genres"> 
+                                        <label className="text-left"><b>Genres:</b></label>
+                                        <ul>
+                                            {genres.map((genre, index) => (
+                                                <li key={index} >{genre}</li>
+                                            ))}
+                                        </ul>
+                                        <p><b>Note:</b> Genres produced by this search function are not all included in genre dropdown list in the next section.</p>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label>No genre data is available in the database for this specific song!</label>
+                                    </div>
+                                )}
+                            </div>
+                        }
+                    
+                    </fieldset>
+                </form>
+
+                {/* Form for Song genres, number of songs, and explicit */}
+                <form onSubmit={handleSubmit} className="playlist-form">
+                    <fieldset>
+                    <h2>Playlist Parameters</h2>
+                        <div className="numSongsInput">
+                            <label htmlFor="numberOfSongs">Number of Songs (Max 50):</label>
                             <input
-                                type="text"
-                                id="songName"                 
-                                value={songName}
-                                onChange={handleSongNameChange}
+                                type="number"
+                                id="numberOfSongs"
+                                min={1}
+                                max={100}                    
+                                value={numSongs}
+                                onChange={handleNumSongsChange}
                                 required
                             />
-                    </div>
-                    <button type="submit">Search Songs</button>
-                </fieldset>
-
-                {/* Song list button only shows when pressed */}
-                <fieldset>
-                    {/* Song List button */}
-                    {(songs.length > 0 && !showSongTable) && (
-                        <div className="song-table">
-                            <h2>Search Results</h2>
-                            <label>Click the "Show Songs" button to see your searched songs!</label>
-                            <button onClick={() => setShowSongTable(true)}>Show Songs</button>
-                        </div>
-                    )}
-
-                    {/* Song Table Popup */}
-                    {showSongTable && (
-                        <div>
-                            <h2>Search Results</h2>
-                            <label>Choose a song to retrieve the genres of a specific song.</label>
-                            <SongTable 
-                                songs={songs} 
-                                onSelectSong={handleSelectSong}
-                                onClose={() => setShowSongTable(false)}
-                            />
-                        </div>
-                    )}
-                </fieldset>
-
-                {/* Genres */}
-                <fieldset>
-                    {currentSongName != '' &&
-                        <div>
-                            <h2>Song Genres</h2>
-                            <label className="text-left"><b>Current Selected Song:</b> {currentSongName}</label>
-                    
-                            {/* If genres array is has stuff */}
-                            {genres.length > 0 ? (
-                                <div> 
-                                    <label className="text-left"><b>Genres:</b></label>
-                                    <ul>
-                                        {genres.map((genre, index) => (
-                                            <li key={index}>{genre}</li>
-                                        ))}
-                                    </ul>
-                                    <p><b>Note:</b> Genres produced by this search function are not all included in genre dropdown list in the next section.</p>
-                                </div>
-                            ) : (
-                                <div>
-                                    <label>No genre data is available in the database for this specific song!</label>
-                                </div>
-                            )}
-                        </div>
-                    }
-                   
-                </fieldset>
-            </form>
-
-            {/* Form for Song genres, number of songs, and explicit */}
-            <form onSubmit={handleSubmit} className="playlist-form">
-                <fieldset>
-                <h2>Playlist Parameters</h2>
-                    <div className="numSongsInput">
-                        <label htmlFor="numberOfSongs">Number of Songs (Max 50):</label>
-                        <input
-                            type="number"
-                            id="numberOfSongs"
-                            min={1}
-                            max={100}                    
-                            value={numSongs}
-                            onChange={handleNumSongsChange}
-                            required
-                        />
-                    </div>
-
-                    {/* Ask for Genres */}
-                    <div className="genre-select">
-                        <div className="genre-dropdown">
-                            <label>Select up to 5 Genres: </label>
-                            <select value={currentGenre} onChange={handleGenreSelection}>
-                                <option value="" hidden>-- Select Genre --</option>
-                                {genreOptions.map(genre => (
-                                    <option key={genre} value={genre}>{genre}</option>
-                                ))}
-                            </select>
                         </div>
 
-                        <div className="selected-genres">
-                            <label>Selected Genres. Press the "X" to remove a genre from the list.</label>
-                            <ul>
-                                {selectedGenres.map(genre => (
-                                    <li key={genre}>
-                                        {genre}
-                                        <button type="button" onClick={() => handleRemoveGenre(genre)} className="remove-button">X</button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                    <label>Allow Explicit Songs?</label>
-                    <div className="explicit-radio">
-                        <div>
-                            <label htmlFor="explicitYes" className='radio-label'>Yes
-                            <input
-                            type="radio"
-                            id="explicitYes"
-                            name="explicit"
-                            value="yes"
-                            defaultChecked={explicit === 'yes'}
-                            onChange={handleExplicitChange}
-                            /></label>
+                        {/* Ask for Genres */}
+                        <div className="genre-select">
+                            <div className="genre-dropdown">
+                                <label>Select up to 5 Genres: </label>
+                                <select value={currentGenre} onChange={handleGenreSelection}>
+                                    <option value="" hidden>-- Select Genre --</option>
+                                    {genreOptions.map(genre => (
+                                        <option key={genre} value={genre}>{genre}</option>
+                                    ))}
+                                </select>
+                            </div>
 
+                            <div className="selected-genres">
+                                <label>Selected Genres. Press the "X" to remove a genre from the list.</label>
+                                <ul>
+                                    {selectedGenres.map(genre => (
+                                        <li key={genre}>
+                                            {genre}
+                                            <button type="button" onClick={() => handleRemoveGenre(genre)} className="remove-button">X</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-                        <div>
-                            <label htmlFor="explicitNo" className='radio-label'>No
-                            <input
-                            type="radio"
-                            id="explicitNo"
-                            name="explicit"
-                            value="no"
-                            defaultChecked={explicit === 'no'}
-                            onChange={handleExplicitChange}
-                            /></label>
+                        <label>Allow Explicit Songs?</label>
+                        <div className="explicit-radio">
+                            <div>
+                                <label htmlFor="explicitYes" className='radio-label'>Yes
+                                <input
+                                type="radio"
+                                id="explicitYes"
+                                name="explicit"
+                                value="yes"
+                                defaultChecked={explicit === 'yes'}
+                                onChange={handleExplicitChange}
+                                /></label>
 
+                            </div>
+                            <div>
+                                <label htmlFor="explicitNo" className='radio-label'>No
+                                <input
+                                type="radio"
+                                id="explicitNo"
+                                name="explicit"
+                                value="no"
+                                defaultChecked={explicit === 'no'}
+                                onChange={handleExplicitChange}
+                                /></label>
+
+                            </div>
                         </div>
-                    </div>
-    
-                    <button type="button" onClick={handleReset} className="reset-button">Reset</button>
-                    <button type="submit">Create Playlist</button>
-                </fieldset>
-            </form>
+        
+                        <button type="button" onClick={handleReset} className="reset-button">Reset</button>
+                        <button type="submit">Create Playlist</button>
+                    </fieldset>
+                </form>
+            </section>
         </div>
     )
 };

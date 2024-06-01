@@ -8,42 +8,42 @@ function buildEmail(email, playlist) {
                     body, html {
                         font-family: 'Roboto', sans-serif, Arial, Helvetica;
                         font-size: 16px;
-                        color: white;
+                        color: #000000;
                         background: #333333;
                     }
                     a {
-                        color: white;
+                        color: #000000;
                         text-decoration: none;
                         transition: color 0.3s ease;
                     }
                     a:hover {
-                        color: #1db954;  /* Change color on hover */
+                        color: #1db954;  
                     }
                     h1 {
-                        text-align: center;  /* Center the header */
-                        color: white;
+                        text-align: center; 
+                        color: #000000;
                     }
                     table {
                         width: 80%; 
                         margin: 40px auto; 
                         border-collapse: collapse; 
-                        border: white 2px inset; 
+                        border: #000000 2px inset; 
                         border-radius: 10%;
                     }
                     caption {
                         font-size: 16px;
                         text-align: center;
-                        color: white;
+                        color: #000000;
                         margin-bottom: 10px;
                         font-weight: bold;
                     }
                     th, td {
                         padding: 8px;
-                        text-align: left;  /* Ensures table cells are aligned left */
+                        text-align: left;
                     }
                     th {
-                        background-color: #333;
-                        border-bottom: 1px solid white; 
+                        background-color: #000000;
+                        border-bottom: 1px solid #000000; 
                     }
                     tr:nth-child(even) {
                         background-color: #474646;

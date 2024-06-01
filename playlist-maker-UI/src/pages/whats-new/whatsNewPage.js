@@ -5,7 +5,7 @@ function WhatsNewPage () {
         <div className="whats-new-page">
             <section className="whats-new">
                 <h1>What's New?</h1>
-                <h3>Version 1.0 of Playlist Pioneer Release</h3>
+                <h3>Version 1.1 of Playlist Pioneer Release</h3>
                 <ul>
                     <li>
                         Playlists can be made by selecting up to 5 genres.
@@ -17,16 +17,15 @@ function WhatsNewPage () {
                         After a playlists has been generated, songs can be removed from the playlist.
                         Once a song has been removed from the playlist, an Undo feature has been implemented.
                     </li>
+                    <li>
+                        You can now email and download your playlist! Download your playlist in both csv and json formats.
+                    </li>
                 </ul>
             </section>
 
             <section className="future-updates">
                 <h1>Future Updates</h1>
                 <ul>
-                    <li>
-                        After playlist generation, users will be able to export their playlist in four different formats: 
-                        JSON, CSV, XML, and Text. 
-                    </li>
                     <li>
                         Users will be able to query a video game/book database to generate playlists that fit the genres 
                         of the book/video game.
