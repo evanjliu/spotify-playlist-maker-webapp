@@ -18,8 +18,8 @@ function HomePage () {
                         It only takes 1-2 minutes to generate a customized playlist with up to 50 songs!
                     </p>
                     <p>
-                        You will be able to export and save these personalized playlists to your local computer.
-                        This process will take less than 30 seconds and will download in any format you desire.
+                        You will be able to export and save these personalized playlists to your local computer or email.
+                        This process will take less than 30 seconds!
                     </p>
                     <p className="center-text">
                         <span className="link" onClick={() => redirect('new')}>Click here</span> to learn about new features!
