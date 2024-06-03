@@ -1,5 +1,17 @@
 function buildEmail(email, playlist) {
-    // HTML content with styles including centered header and hover effects
+    // Check if playlist is an array, if not try to convert it
+    if (!Array.isArray(playlist)) {
+        console.error("Playlist is not an array, attempting to convert:", playlist);
+        
+        // Attempt to convert playlist dictionary to array if possible
+        playlist = Object.values(playlist);
+
+        if (!Array.isArray(playlist)) {
+            console.error("Unable to convert playlist to array");
+            return null;  // or handle the error as needed
+        }
+    }
+
     let htmlContent = `
         <html>
             <head>
@@ -68,7 +80,6 @@ function buildEmail(email, playlist) {
                     </thead>
                     <tbody>`;
 
-    // Loop through each song in the playlist to create rows
     playlist.forEach((song, index) => {
         htmlContent += `
             <tr>
@@ -82,7 +93,6 @@ function buildEmail(email, playlist) {
 
     htmlContent += `</tbody></table></body></html>`;
 
-    // Mail info object
     let mailInfo = {
         from: 'mailtrap@demomailtrap.com',
         to: email,

@@ -15,10 +15,9 @@ require('dotenv').config();
 // 2: Create a developer app and select "Web API" when asked about which API you want to use.
 // 3: Navigate to your account dashboard and copy/paste your CLIENT_ID and CLIENT_SECRET into these variables.
 // -----------------------------------------------------------------------------------------------------------
-const CLIENT_ID = '4941ac63e50843f8871d981fc9fc72e8';
-const CLIENT_SECRET = 'dd1e38cefac245d892cab1e05eb92737';
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
-
 // Spotify Web API and set up authentication
 const SpotifyWebAPI = require('spotify-web-api-node');
 const spotify = new SpotifyWebAPI({

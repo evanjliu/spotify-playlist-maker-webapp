@@ -115,7 +115,7 @@ exports.getSongList = async (req, res) => {
 };
 
 //----------------------------------------------------------------------
-// GET SONGS LIST
+// GET GENRES
 //----------------------------------------------------------------------
 exports.getGenres = async (req, res) => {
     console.log("Request Received! Now getting list of genres...\n\n")
@@ -179,7 +179,7 @@ exports.sendEmail = async (req, res) => {
 };
 
 //----------------------------------------------------------------------
-// DOWNLOAD PLAYLIST AS CSV
+// DOWNLOAD PLAYLIST AS CSV (FROM TEAMMATE)
 //----------------------------------------------------------------------
 exports.getCSV = async (req, res) => {
     console.log("Request Received! Now generating CSV...\n\n");
