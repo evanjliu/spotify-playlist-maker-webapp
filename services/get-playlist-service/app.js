@@ -19,6 +19,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 
+
 // Spotify Web API and set up authentication
 const SpotifyWebAPI = require('spotify-web-api-node');
 const spotify = new SpotifyWebAPI({
