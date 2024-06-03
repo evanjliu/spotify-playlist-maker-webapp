@@ -220,6 +220,7 @@ function CreatePlaylistPage ({setPlaylist, popUp, setPopUp}) {
         <div>
             <h1>Create Playlist</h1>
             <p><b>Instructions: </b>In order to create a personalized playlist, select one or more of the following provided genres. You can also specify how many songs you would like in the playlist, and whether to include explicit songs.</p>
+            <p>A song searching service is also provided to retreive specific genres for a certain song, to give you some ideas for genre combinations.</p>
             <p className="center-text"><span className="link" onClick={handlePopUp}>Click here</span> to learn more about how personalization works!</p>
             {popUp && <PopUp onClose={handlePopUp} setPopUp={setPopUp} />}
             
